@@ -1,0 +1,62 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "PJM_RTO_Secure_Energy_Oracle",
+  "name_for_human": "⚡ iExec PJM Energy Oracle (Intel TEE Guarded)",
+  "description_for_model": "AI agent gateway for verified real-time and time-weighted average (TWAP) electricity prices (LMP), congestion, losses, and grid demand metrics across the PJM Interconnection (including Northern Virginia data center hubs). Data is securely computed inside an Intel TDX hardware enclave using a 3-source consensus median to eliminate API hacks and false spikes. Use this to route high-performance compute tasks, optimize GPU data center power consumption, and hedge financial energy arbitrage positions.",
+  "description_for_human": "Промышленный Web3-оракул энергетической телеметрии региона PJM (крупнейший хаб дата-центров в мире). Защищен аппаратной броней Intel TDX (TEE). Поставляет верифицированную средневзвешенную медиану спотовых цен (LMP) и нагрузки сети для автономных ИИ-агентов, DeFi-трейдеров и управляющих серверной инфраструктурой.",
+  "auth": {
+    "type": "web3_subscription",
+    "token": "iExec RLC",
+    "network": "Arbitrum One"
+  },
+  "api": {
+    "type": "openapi",
+    "is_user_authenticated": false
+  },
+  "smart_contract": {
+    "address": "0xВаш_Развернутый_Контракт_В_Arbitrum",
+    "network_id": "42161",
+    "abi_endpoints": {
+      "check_access": "accessExpiredAt(address)",
+      "purchase_access": "buyAccess(uint256)",
+      "read_data": "getTelemetry()"
+    }
+  },
+  "pricing_tiers": [
+    {
+      "tier_id": 0,
+      "name": "Sprinter Pass",
+      "duration": "24 Hours",
+      "price_rlc": 60,
+      "best_for": "Краткосрочные ИИ-арбитражники, ловящие погодные аномалии."
+    },
+    {
+      "tier_id": 1,
+      "name": "B2B Sweet Spot",
+      "duration": "72 Hours",
+      "price_rlc": 150,
+      "best_for": "DeFi-боты и ИИ-логисты, страхующие риски на выходные (Скидка 16%)."
+    },
+    {
+      "tier_id": 2,
+      "name": "Infrastructure Pro",
+      "duration": "7 Days",
+      "price_rlc": 300,
+      "best_for": "Стационарные ИИ-управляющие крупных GPU-кластеров (Скидка 28%)."
+    }
+  ],
+  "security_guarantees": {
+    "hardware_enclave": "Intel TDX / SGX (Gramine Runtime)",
+    "consensus_mechanism": "3-Way Web2 API Median (EIA, PJM Direct, Grid Status)",
+    "legal_shield": "On-chain confidenceScore parameter provided. Verification strictly enforced via msg.sender == iexecHubAddress."
+  },
+  "keywords": [
+    "pjm-interconnection",
+    "data-center-optimization",
+    "electricity-lmp-prices",
+    "secure-tee-oracle",
+    "m2m-energy-billing",
+    "arbitrum-energy-data",
+    "prompt-ready-json"
+  ]
+}

@@ -1,0 +1,369 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B2B iExec TEE Oracle Mission Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js" type="application/javascript"></script>
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans min-h-screen">
+    <div class="max-w-5xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center border-b border-zinc-800 pb-6 mb-8 gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">📡 B2B ENERGY ORACLE</h1>
+                <p class="text-zinc-500 text-sm mt-1">iExec Confidential TEE (Intel TDX) Control Center</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="connectWalletBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-lg text-sm transition-all duration-200 shadow-md">Connect Wallet</button>
+                <div id="walletBadge" class="hidden bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-lg text-xs text-zinc-400 font-mono"></div>
+            </div>
+        </header>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <!-- Oracle Health -->
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col justify-between">
+                <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Oracle Health</span>
+                <div class="my-3 flex items-center gap-2">
+                    <span id="healthLed" class="w-3.5 h-3.5 rounded-full bg-zinc-700 animate-pulse"></span>
+                    <span id="healthText" class="text-md font-black text-white tracking-tight">Checking...</span>
+                </div>
+                <div class="flex gap-1.5">
+                    <button id="btnActive" class="hidden bg-emerald-950 hover:bg-emerald-900 text-emerald-400 border border-emerald-800/50 py-1 px-2 rounded text-[10px] font-bold">ACTIVE</button>
+                    <button id="btnMaint" class="hidden bg-amber-950 hover:bg-amber-900 text-amber-400 border border-amber-800/50 py-1 px-2 rounded text-[10px] font-bold">MAINT</button>
+                </div>
+            </div>
+
+            <!-- Balances -->
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col justify-between">
+                <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Revenue</span>
+                <div class="my-3">
+                    <span id="rlcBalance" class="text-2xl font-black text-white">0.00</span>
+                    <span class="text-emerald-500 font-bold text-xs font-mono">RLC</span>
+                </div>
+                <button id="withdrawBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold py-1.5 rounded text-xs">Withdraw</button>
+            </div>
+
+            <!-- Total Subscriptions -->
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col justify-between">
+                <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Subscriptions</span>
+                <div class="my-3">
+                    <span id="subCount" class="text-3xl font-black text-white">0</span>
+                    <span class="text-zinc-500 text-xs ml-1">accounts</span>
+                </div>
+                <span class="text-[10px] text-zinc-500">First-time and sponsor subs</span>
+            </div>
+
+            <!-- Live Signals -->
+            <div class="bg-zinc-900 border border-zinc-800 p-4 rounded-xl flex flex-col justify-between">
+                <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Active Signal</span>
+                <div class="my-3">
+                    <span id="vectorText" class="text-lg font-black text-white">NEUTRAL</span>
+                </div>
+                <span id="signalAge" class="text-[10px] text-zinc-500">Age: checking...</span>
+            </div>
+        </div>
+
+        <!-- Ingestion Diagnostics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Parser Lights -->
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-xl">
+                <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Ingestion Sources Diagnostic</h3>
+                <div class="space-y-3.5">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">PJM LMP Spot (GridStatus App-API)</span>
+                        <div class="flex items-center gap-2"><span id="pjmPriceLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="pjmPriceVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">MISO LMP Spot (Consolidated API)</span>
+                        <div class="flex items-center gap-2"><span id="misoPriceLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="misoPriceVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">MISO Dynamic Discovery API (Selectolax)</span>
+                        <div class="flex items-center gap-2"><span id="misoDynLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="misoDynVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">MISO Fallback API (Hardcoded)</span>
+                        <div class="flex items-center gap-2"><span id="misoFallbackLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="misoFallbackVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">PJM System Demand (Official API)</span>
+                        <div class="flex items-center gap-2"><span id="pjmLoadLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="pjmLoadVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="text-zinc-400 font-medium">MISO Scheduled Flow (FiveMinute API)</span>
+                        <div class="flex items-center gap-2"><span id="misoNsiLed" class="w-2.5 h-2.5 rounded-full bg-zinc-700"></span><span id="misoNsiVal" class="font-mono text-zinc-500">checking</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-Key Diagnostics -->
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-xl flex flex-col justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Self-Healing API Keys & Hashes</h3>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <p class="text-zinc-500 mb-1">Active PJM subscriptionKey (Auto-Downloaded)</p>
+                            <code id="pjmKeyVal" class="bg-zinc-950 px-2 py-1 rounded block truncate font-mono text-blue-400">checking...</code>
+                        </div>
+                        <div>
+                            <p class="text-zinc-500 mb-1">GridStatus Web Commit Hash (Auto-Detected)</p>
+                            <code id="gsHashVal" class="bg-zinc-950 px-2 py-1 rounded block truncate font-mono text-purple-400">checking...</code>
+                        </div>
+                        <div>
+                            <p class="text-zinc-500 mb-1">Active MISO API Base URL (Auto-Discovered)</p>
+                            <code id="misoBaseVal" class="bg-zinc-950 px-2 py-1 rounded block truncate font-mono text-emerald-400">checking...</code>
+                        </div>
+                        <div>
+                            <p class="text-zinc-500 mb-1">Active RLC Price (Binance Exchange Feed)</p>
+                            <code id="rlcPriceVal" class="bg-zinc-950 px-2 py-1 rounded block truncate font-mono text-amber-500">checking...</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manager Lists (Owner Only) -->
+        <div id="ownerPanel" class="bg-zinc-900 border border-zinc-800 p-5 rounded-xl mb-8 hidden">
+            <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">⚙️ Owner Administrative Actions</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+                <!-- Whitelist -->
+                <div>
+                    <p class="font-bold text-zinc-400 mb-2">Protect VIP Partners (Whitelist)</p>
+                    <div class="flex gap-2">
+                        <input id="whitelistInput" type="text" placeholder="0x..." class="bg-zinc-950 border border-zinc-800 px-3 py-2 rounded-lg w-full text-zinc-300 font-mono text-xs focus:outline-none">
+                        <button id="whitelistAddBtn" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-4 py-2 rounded-lg">Add</button>
+                        <button id="whitelistRemBtn" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 px-4 py-2 rounded-lg">Remove</button>
+                    </div>
+                </div>
+                <!-- Blacklist -->
+                <div>
+                    <p class="font-bold text-zinc-400 mb-2">Spy Defense Inoculation (Flag Spy / Poison Sign)</p>
+                    <div class="flex gap-2">
+                        <input id="spyInput" type="text" placeholder="0x..." class="bg-zinc-950 border border-zinc-800 px-3 py-2 rounded-lg w-full text-zinc-300 font-mono text-xs focus:outline-none">
+                        <button id="spyAddBtn" class="bg-red-950 hover:bg-red-900 text-red-400 border border-red-900/50 font-bold px-4 py-2 rounded-lg">Flag</button>
+                        <button id="spyRemBtn" class="bg-zinc-950 hover:bg-zinc-800 text-zinc-400 border border-zinc-800 px-4 py-2 rounded-lg">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Checker -->
+        <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-xl mb-8 text-xs">
+            <h3 class="text-sm font-bold text-zinc-400 uppercase tracking-wider mb-4 border-b border-zinc-800 pb-2">Subscription & Trial Gating</h3>
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="flex gap-2 w-full md:w-2/3">
+                    <input id="subCheckerInput" type="text" placeholder="Check address sub: 0x..." class="bg-zinc-950 border border-zinc-800 px-3 py-2 rounded-lg w-full text-zinc-300 font-mono text-xs focus:outline-none">
+                    <button id="subCheckBtn" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-4 py-2 rounded-lg">Check</button>
+                </div>
+                <button id="trialBtn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg text-xs">Claim Free Trial (48h)</button>
+            </div>
+            <p id="subResult" class="text-zinc-500 mt-3 hidden font-mono"></p>
+        </div>
+
+        <p id="txStatus" class="text-center text-xs text-zinc-500 font-mono"></p>
+    </div>
+
+    <script>
+        const ORACLE_ADDRESS = "0x0000000000000000000000000000000000000000"; 
+        const RLC_ADDRESS = "0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C";
+
+        const ORACLE_ABI = [
+            "function oracleStatus() view returns (uint8)",
+            "function setOracleStatus(uint8 _status) external",
+            "function setBlacklisted(address spy, bool _isBlacklisted) external",
+            "function setWhitelisted(address user, bool _isWhitelisted) external",
+            "function isWhitelisted(address) view returns (bool)",
+            "function isSpy(address) view returns (bool)",
+            "function subscriptionExpiry(address) view returns (uint256)",
+            "function claimFreeTrial() external",
+            "function owner() view returns (address)",
+            "function withdrawRLC() external",
+            "function totalSubscriptions() view returns (uint256)",
+            "function latestTelemetry() view returns (uint256 timestampSlot, int256 pjm, int256 miso, int256 priceSpread, int8 arbitrageVector, uint256 confidenceScore, uint256 recordedBlock)"
+        ];
+
+        const ERC20_ABI = ["function balanceOf(address) view returns (uint256)"];
+
+        let provider, signer, oracleContract, rlcContract, userAddress, ownerAddress;
+
+        async function connectWallet() {
+            if (!window.ethereum) return alert("MetaMask not found!");
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = provider.getSigner();
+            userAddress = await signer.getAddress();
+            
+            document.getElementById("connectWalletBtn").classList.add("hidden");
+            const badge = document.getElementById("walletBadge");
+            badge.innerText = `${userAddress.slice(0,6)}...${userAddress.slice(-4)}`;
+            badge.classList.remove("hidden");
+
+            initContracts();
+        }
+
+        function initContracts() {
+            if (ORACLE_ADDRESS === "0x0000000000000000000000000000000000000000") return;
+            oracleContract = new ethers.Contract(ORACLE_ADDRESS, ORACLE_ABI, signer);
+            rlcContract = new ethers.Contract(RLC_ADDRESS, ERC20_ABI, signer);
+            
+            updateContractData();
+        }
+
+        async function updateContractData() {
+            try {
+                const bal = await rlcContract.balanceOf(ORACLE_ADDRESS);
+                document.getElementById("rlcBalance").innerText = (bal.toNumber() / 1e9).toFixed(2);
+
+                const status = await oracleContract.oracleStatus();
+                ownerAddress = await oracleContract.owner();
+
+                const subs = await oracleContract.totalSubscriptions();
+                document.getElementById("subCount").innerText = subs.toString();
+
+                if (userAddress.toLowerCase() === ownerAddress.toLowerCase()) {
+                    document.getElementById("ownerPanel").classList.remove("hidden");
+                    document.getElementById("btnActive").classList.remove("hidden");
+                    document.getElementById("btnMaint").classList.remove("hidden");
+                }
+
+                const telemetry = await oracleContract.latestTelemetry();
+                const vector = telemetry.arbitrageVector;
+                const vText = vector === 1 ? "SHIFT TO MISO" : vector === -1 ? "SHIFT TO PJM" : "NEUTRAL";
+                document.getElementById("vectorText").innerText = vText;
+
+                const ageSec = Math.floor(Date.now() / 1000) - telemetry.timestampSlot.toNumber();
+                document.getElementById("signalAge").innerText = `Last updated: ${Math.floor(ageSec/60)}m ago`;
+
+                const led = document.getElementById("healthLed");
+                const hText = document.getElementById("healthText");
+
+                if (status === 1) {
+                    led.className = "w-3.5 h-3.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]";
+                    hText.innerText = "MAINTENANCE";
+                } else if (ageSec > 5400) { 
+                    led.className = "w-3.5 h-3.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]";
+                    hText.innerText = "OFFLINE (STALE)";
+                } else {
+                    led.className = "w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]";
+                    hText.innerText = "ONLINE";
+                }
+
+            } catch (e) {
+                console.error("Contract call failed:", e);
+            }
+        }
+
+        async function writeTx(txPromise) {
+            const status = document.getElementById("txStatus");
+            status.innerText = "Broadcasting transaction...";
+            try {
+                const tx = await txPromise;
+                status.innerText = "Waiting for block confirmation...";
+                await tx.wait();
+                status.innerText = "Transaction confirmed successfully!";
+                updateContractData();
+            } catch (e) {
+                status.innerText = `Error: ${e.message || e}`;
+            }
+        }
+
+        document.getElementById("withdrawBtn").onclick = () => writeTx(oracleContract.withdrawRLC());
+        document.getElementById("btnActive").onclick = () => writeTx(oracleContract.setOracleStatus(0));
+        document.getElementById("btnMaint").onclick = () => writeTx(oracleContract.setOracleStatus(1));
+        document.getElementById("trialBtn").onclick = () => writeTx(oracleContract.claimFreeTrial());
+
+        document.getElementById("whitelistAddBtn").onclick = () => {
+            const addr = document.getElementById("whitelistInput").value;
+            writeTx(oracleContract.setWhitelisted(addr, true));
+        };
+        document.getElementById("whitelistRemBtn").onclick = () => {
+            const addr = document.getElementById("whitelistInput").value;
+            writeTx(oracleContract.setWhitelisted(addr, false));
+        };
+
+        document.getElementById("spyAddBtn").onclick = () => {
+            const addr = document.getElementById("spyInput").value;
+            writeTx(oracleContract.setBlacklisted(addr, true));
+        };
+        document.getElementById("spyRemBtn").onclick = () => {
+            const addr = document.getElementById("spyInput").value;
+            writeTx(oracleContract.setBlacklisted(addr, false));
+        };
+
+        document.getElementById("subCheckBtn").onclick = async () => {
+            const addr = document.getElementById("subCheckerInput").value;
+            const exp = await oracleContract.subscriptionExpiry(addr);
+            const expTime = exp.toNumber();
+            const resultText = document.getElementById("subResult");
+            resultText.classList.remove("hidden");
+            if (expTime < Date.now() / 1000) {
+                resultText.innerText = "❌ No active subscription (expired or never registered).";
+                resultText.className = "text-red-400 mt-3 font-mono";
+            } else {
+                resultText.innerText = `✅ Active subscriber until: ${new Date(expTime * 1000).toLocaleString()}`;
+                resultText.className = "text-emerald-400 mt-3 font-mono";
+            }
+        };
+
+        async function loadDiagnostics() {
+            try {
+                const r = await fetch("live_data.json");
+                const d = await r.json();
+
+                updateSourceLight("pjmPrice", d.pjm_price, "$/MWh");
+                updateSourceLight("misoPrice", d.miso_price, "$/MWh");
+                updateSourceLight("pjmLoad", d.pjm_load, "MW");
+                updateSourceLight("misoNsi", d.miso_nsi, "MW");
+
+                updateSimpleStatus("misoDyn", d.miso_dynamic_success);
+                updateSimpleStatus("misoFallback", d.miso_hardcoded_success);
+
+                document.getElementById("pjmKeyVal").innerText = d.auto_key_updates.pjm_miner_key;
+                document.getElementById("gsHashVal").innerText = d.auto_key_updates.gridstatus_commit_hash;
+                document.getElementById("misoBaseVal").innerText = d.miso_api_base || "N/A";
+                document.getElementById("rlcPriceVal").innerText = d.rlc_price_usd ? `$${d.rlc_price_usd.toFixed(4)} USD` : "offline/fallback";
+            } catch (e) {
+                console.warn("Could not load live_data.json", e);
+            }
+        }
+
+        function updateSourceLight(prefix, val, unit) {
+            const led = document.getElementById(`${prefix}Led`);
+            const text = document.getElementById(`${prefix}Val`);
+        function updateSimpleStatus(id, success) {
+            const led = document.getElementById(`${id}Led`);
+            const text = document.getElementById(`${id}Val`);
+            if (success) {
+                led.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]";
+                text.innerText = "ONLINE";
+                text.className = "font-mono text-emerald-500";
+            } else {
+                led.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.5)]";
+                text.innerText = "OFFLINE";
+                text.className = "font-mono text-red-500";
+            }
+        }
+            if (val === null || val === undefined) {
+                led.className = "w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.5)]";
+                text.innerText = "error/offline";
+                text.className = "font-mono text-red-500";
+            } else {
+                led.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]";
+                text.innerText = `${val.toFixed(1)} ${unit}`;
+                text.className = "font-mono text-emerald-500";
+            }
+        }
+
+        document.getElementById("connectWalletBtn").onclick = connectWallet;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDiagnostics();
+            if (window.ethereum) connectWallet();
+            setInterval(loadDiagnostics, 15000);
+        });
+    </script>
+</body>
+</html>

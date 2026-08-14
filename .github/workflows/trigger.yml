@@ -1,0 +1,32 @@
+name: ⚡ Energy Oracle Automatic Trigger
+
+on:
+  schedule:
+    # Запуск каждый час (минута 0)
+    - cron: '0 * * * *'
+  workflow_dispatch:
+    # Возможность запустить вручную из интерфейса GitHub
+
+jobs:
+  trigger-oracle:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🟢 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: 🛠️ Install iExec CLI
+      run: npm install -g iexec
+
+    - name: 🔑 Import Wallet and Trigger Oracle Update
+      run: |
+        # Импортируем кошелек, создавая временный локальный файл
+        iexec wallet import ${{ secrets.PRIVATE_KEY }} --password ${{ secrets.IEXEC_PASSWORD }} --force
+        
+        # Запускаем TEE-приложение в сети Arbitrum One Mainnet
+        iexec app run 0x865e83302308cE9f3b0d18C8a9F21b170F470996 --watch --chain arbitrum-mainnet --password ${{ secrets.IEXEC_PASSWORD }}

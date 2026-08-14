@@ -1,0 +1,32 @@
+# Gramine / Intel TDX Orchestration Manifest (iExec Nox Infrastructure)
+loader.entrypoint = "file:{{ gramine.libos }}"
+libos.entrypoint = "/usr/local/bin/python"
+
+loader.log_level = "error"
+
+loader.env.LD_LIBRARY_PATH = "/lib:/lib/x86_64-linux-gnu:/usr/lib:/usr/lib/x86_64-linux-gnu"
+loader.env.PATH = "/bin:/usr/bin:/usr/local/bin"
+loader.env.EIA_API_KEY = { passthrough = true }
+loader.env.IEXEC_APP_ADDRESS = { passthrough = true }
+
+# Memory Optimization Configuration
+sgx.enclave_size = "1G"
+sgx.thread_num = 8
+
+sys.enable_extra_runtime_checks = true
+
+# Secure Multi-Route Outbound Links Mapping for open-source grids parsing
+sys.net.allow_outbound_links = [
+    "api.eia.gov:443",
+    "pjm.com:443",
+    "misoenergy.org:443",
+    "spp.org:443",
+    "pubftp.spp.org:21"
+]
+
+fs.mounts = [
+    { uri = "file:/lib", path = "/lib" },
+    { uri = "file:/usr", path = "/usr" },
+    { uri = "file:/app", path = "/app" },
+    { uri = "file:/iexec_out", path = "/iexec_out" }
+]

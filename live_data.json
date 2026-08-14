@@ -1,0 +1,16 @@
+{
+  "last_update": 1786640201,
+  "pjm_price": 47.35,
+  "miso_price": 37.9,
+  "pjm_load": 125795.336,
+  "miso_nsi": -11288.0,
+  "miso_dynamic_success": true,
+  "miso_hardcoded_success": true,
+  "miso_api_base": "https://public-api.misoenergy.org",
+  "rlc_price_usd": 0.2643,
+  "confidence_score": 100,
+  "auto_key_updates": {
+    "pjm_miner_key": "6a75d9f6d933401dbb4f36f8e70b95b3",
+    "gridstatus_commit_hash": "e5dc0bc991efe42f6548e246ff98c5ec26d94b9c"
+  }
+}

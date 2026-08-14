@@ -1,0 +1,32 @@
+{
+  "iexec": {
+    "name": "Energy-Telemetry-TEE-Oracle",
+    "version": "1.0.0",
+    "description": "The Flexible Energy Oracle delivers tamper-proof, real-time Locational Marginal Price (LMP) telemetry from the US power grid (PJM & MISO) directly to AI Agents on Arbitrum One Mainnet using high-integrity Intel TDX secure enclaves.",
+    "app": {
+      "owner": "0xa6dd8c096275c020756adb418a905f44566c74d6",
+      "name": "Energy-Telemetry-TEE-Oracle",
+      "type": "DOCKER",
+      "multiaddress": "docker.io/ansgardocker/energy-oracle:1.0.0",
+      "checksum": "0x05374de6ea59a717ef6190d26a539ebf338e2a642b629ae01ec2a010e9c2e565",
+      "mreid": {
+        "provider": "v8-gramine",
+        "version": "1.5"
+      }
+    },
+    "sandbox": {
+      "tag": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    }
+  },
+  "app": {
+    "owner": "0xa6dd8c096275c020756adb418a905f44566c74d6",
+    "name": "Energy-Telemetry-TEE-Oracle",
+    "type": "DOCKER",
+    "multiaddr": "docker.io/ansgardocker/energy-oracle:1.0.0",
+    "checksum": "0x05374de6ea59a717ef6190d26a539ebf338e2a642b629ae01ec2a010e9c2e565",
+    "mreid": {
+      "provider": "v8-gramine",
+      "version": "1.5"
+    }
+  }
+}

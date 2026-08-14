@@ -1,0 +1,7 @@
+{
+  "default": "arbitrum-mainnet",
+  "chains": {
+    "arbitrum-mainnet": {},
+    "arbitrum-sepolia-testnet": {}
+  }
+}

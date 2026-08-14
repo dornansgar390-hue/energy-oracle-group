@@ -1,0 +1,16 @@
+# Исключаем перед сборкой Docker
+*.md
+.git
+.github
+.env
+.vscode
+.venv*
+lib/
+src/
+test/
+out/
+cache/
+*.html
+*.js
+*.json
+!requirements.txt
