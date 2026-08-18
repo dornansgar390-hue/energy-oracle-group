@@ -1,0 +1,30 @@
+# GitLab CI/CD Configuration for Energy Oracle Automatic Trigger
+
+stages:
+  - trigger
+
+trigger-oracle-job:
+  stage: trigger
+  image: node:20
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: manual
+  before_script:
+    - npm install -g iexec
+  script:
+    # Импортируем кошелек, используя переменные окружения GitLab CI/CD (Секреты)
+    - iexec wallet import "$PRIVATE_KEY" --password "$IEXEC_PASSWORD" --force
+    
+    # Запускаем TEE-приложение в сети Arbitrum One Mainnet и отправляем результаты в контракт оракула
+    - |
+      iexec app run 0x62B576cE78Bbdf80fbd7b249A423cDBE21BB5FF6 \
+        --callback 0xcfD218DfFced67D0197E9aE3739CC11eE61C2AD6 \
+        --workerpool 0xe372617fC0778cFd832FDB04Ac32498bB60A5276 \
+        --tag tee \
+        --category 0 \
+        --trust 1 \
+        --watch \
+        --chain arbitrum-mainnet \
+        --password "$IEXEC_PASSWORD"
