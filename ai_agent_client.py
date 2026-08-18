@@ -13,7 +13,6 @@ ORACLE_ABI = [
     {"inputs":[],"name":"getTelemetry","outputs":[{"internalType":"uint256","name":"timestampSlot","type":"uint256"},{"internalType":"int8","name":"arbitrageVector","type":"int8"},{"internalType":"uint256","name":"confidenceScore","type":"uint256"}],"stateMutability":"view","type":"function"},
     {"inputs":[{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"purchaseSubscription","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[{"internalType":"address","name":"user","type":"address"},{"internalType":"uint8","name":"tier","type":"uint8"}],"name":"purchaseSubscriptionFor","outputs":[],"stateMutability":"nonpayable","type":"function"},
-    {"inputs":[],"name":"claimFreeTrial","outputs":[],"stateMutability":"nonpayable","type":"function"},
     {"inputs":[],"name":"isArbitrageProfitable","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
     {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"subscriptionExpiry","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
 ]

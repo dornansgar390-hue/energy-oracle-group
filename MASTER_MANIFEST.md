@@ -31,6 +31,8 @@ Subscriptions are managed on-chain via fixed-access time blocks using the iExec 
 | Tier 1 | 3 Days (72 Hours) | 150 RLC | Active Data Center Agents (Sweet Spot) |
 | Tier 2 | 7 Days (168 Hours) | 300 RLC | Enterprise Infrastructure Networks |
 
+> 🔒 **NO FREE TRIAL MODEL:** To secure high-value spatial arbitrage signals against botting, Sybil attacks, and continuous key rotation exploits, there is **no free trial option**. Access is strictly gated via paid subscription tiers.
+
 ---
 
 ## 2. Advanced Security, Crypto Shields & Consensus Engine
@@ -44,32 +46,36 @@ LMP nodes yield negative prices during periods of renewable oversupply (e.g., wi
 solidity
 
 struct Telemetry {
-    uint256 timestampSlot;   // Unix timestamp from enclave
-    int256 pjm;              // PJM West Hub LMP (Scaled x10^6)
-    int256 miso;             // MISO Indiana Hub LMP (Scaled x10^6)
-    int256 priceSpread;      // PJM - MISO (Scaled x10^6)
-    int8 arbitrageVector;    // 1: Shift to MISO | -1: Shift to PJM | 0: Neutral
-    uint256 confidenceScore; // Consensus confidence percentage (0-100)
-    uint256 recordedBlock;   // Block number for MEV lockout
+    address appAddress;          // Address of the iExec DApp
+    uint256 timestampSlot;       // Unix timestamp from enclave
+    int256 pjm;                  // PJM West Hub LMP (Scaled x10^6)
+    int256 miso;                 // MISO Indiana Hub LMP (Scaled x10^6)
+    int256 priceSpread;          // PJM - MISO (Scaled x10^6)
+    int8 arbitrageVector;        // 1: Shift to MISO | -1: Shift to PJM | 0: Neutral
+    uint256 confidenceScore;     // Confidence percentage (0-100) based on data availability
+    uint256 rlcPriceScaled;      // RLC price in USD (Scaled x10^6)
+    address[] suspectedAddresses; // Array of addresses flagged by defense system (e.g., suspicious requests)
+    uint8[] suspectedStatuses;   // Array of corresponding status codes for suspected addresses
 }
 
 
-### 3. Multi-Source Local Consensus Engine (Per Region)
+### 3. Multi-Source & High-Availability Ingestion Engine
 
-To prevent Single Point of Failure (SPOF), the enclave fetches pricing for each region from three architectural vectors:
+To prevent Single Point of Failure (SPOF) and ensure reliable pricing, the enclave implements dynamic API fallback routing and high-availability fetching vectors:
 
-* **Source A (Primary):** `gridstatus` library fetching live spot market nodes (`PJM WEST HUB`, `INDIANA.HUB`).
-* **Source B (Direct API):** Raw JSON endpoint parsing directly from PJM and MISO servers.
-* **Source C (Anchor Control):** US Government EIA API v2 hourly regional benchmark.
+* **PJM West Hub LMP:** Fetched via custom bypass routing targeting the GridStatus App-API, utilizing automatic web commit hash discovery to mimic legitimate browser sessions.
+* **MISO Indiana Hub LMP:** Fetched using a dual-route mechanism:
+  * **Primary (Dynamic Discovery):** Scrapes the active MISO contours page via `selectolax` to dynamically extract the current `apiKey` and base URL for querying MISO's live consolidated LMP API.
+  * **Fallback (Hardcoded Consolidated API):** Queries the public MISO consolidated LMP API (`public-api.misoenergy.org`) as a redundant safety route.
+* **RLC Price Feed:** Uses a cascading lookup engine traversing major sources (Binance API -> Gate.io API -> CoinGecko API) to secure the current USD market value of RLC on-chain.
 
-### 4. Integrity Algorithms & Mitigation Rules
+### 4. Integrity Algorithms & Confidence Scoring
 
-* **Freshness Check:** Data payloads older than 420 seconds (7 minutes) are discarded.
-* **Negative Price Support:** Validates signed numerical values without dropping negative prices. `NaN` or unparseable responses are filtered out.
-* **Deviation Shield:** Outliers deviating from the local mean by more than 50% (or $15.0/MWh) are dropped.
-* **Emergency Circuit Breaker:** If the spread between remaining valid sources exceeds $25.0/MWh, the enclave terminates with `sys.exit(1)`, canceling the update transaction.
-* **MEV & Flash Loan Shield:** On-chain read lockout prevents same-block execution exploit vectors:
-`if (block.number <= latestTelemetry.recordedBlock) revert MEVReadLocked();`
+* **Network Delay Mitigation:** Incorporates human browsing simulations (using `curl_cffi` realistic browser fingerprints to visit weather/energy portals) and uniform chaotic delays to bypass anti-bot shields.
+* **Confidence Scoring (Dynamic Diagnostic):** Starts at a base of 100%. The engine continuously queries auxiliary indicators to confirm grid operational consensus:
+  * If the **PJM RTO Load** (fetched from official PJM Data Miner API) is offline, confidence drops by 15%.
+  * If the **MISO Net System Interchange** (NSI) is offline, confidence drops by another 15%.
+  * On-chain state requires both primary LMP feeds (PJM & MISO) to be present, otherwise the transaction aborts with `sys.exit(1)`.
 
 ---
 

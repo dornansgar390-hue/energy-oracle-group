@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 interface IFlexibleEnergyOracle {
     enum OracleStatus { ACTIVE, MAINTENANCE }
+    enum SpyDetectionStatus { None, Suspicious, ConfirmedSpy }
 
     struct Telemetry {
         uint256 timestampSlot;
@@ -20,7 +21,6 @@ interface IFlexibleEnergyOracle {
     error SubscriptionExpired();
     error MEVReadLocked();
     error InvalidTier();
-    error TrialAlreadyUsed();
     error OracleUnderMaintenance();
     error AddressWhitelisted();
     error InsufficientRefundBalance();
@@ -33,8 +33,8 @@ interface IFlexibleEnergyOracle {
     event WhitelistUpdated(address indexed user, bool isWhitelisted);
     event RefundClaimed(address indexed user, uint256 refundAmount);
     event RlcPriceUpdated(uint256 oldPrice, uint256 newPrice);
+    event SpyStatusUpdated(address indexed user, SpyDetectionStatus indexed status);
 
-    function claimFreeTrial() external;
     function purchaseSubscription(uint8 tier) external;
     function purchaseSubscriptionFor(address user, uint8 tier) external;
     function isArbitrageProfitable() external view returns (bool);
@@ -43,6 +43,7 @@ interface IFlexibleEnergyOracle {
     function setOracleStatus(OracleStatus _status) external;
     function setBlacklisted(address spy, bool _isBlacklisted) external;
     function setWhitelisted(address user, bool _isWhitelisted) external;
+    function resetSpyDetectionStatus(address user) external;
     function totalSubscriptions() external view returns (uint256);
     function claimRefund() external;
     function getSubscriptionCost(uint8 tier) external view returns (uint256);

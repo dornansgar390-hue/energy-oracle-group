@@ -1,14 +1,14 @@
 {
   "iexec": {
-    "name": "Energy-Telemetry-TEE-Oracle",
-    "version": "1.0.0",
+    "name": "Energy-Telemetry-TEE-Oracle-NewVersion",
+    "version": "1.0.1",
     "description": "The Flexible Energy Oracle delivers tamper-proof, real-time Locational Marginal Price (LMP) telemetry from the US power grid (PJM & MISO) directly to AI Agents on Arbitrum One Mainnet using high-integrity Intel TDX secure enclaves.",
     "app": {
-      "owner": "0xa6dd8c096275c020756adb418a905f44566c74d6",
-      "name": "Energy-Telemetry-TEE-Oracle",
+      "owner": "0x8d44D1813a93ad5FEb29dBa7B3Db6F666C9309eA",
+      "name": "Energy-Telemetry-TEE-Oracle-NewVersion",
       "type": "DOCKER",
-      "multiaddress": "docker.io/ansgardocker/energy-oracle:1.0.0",
-      "checksum": "0x05374de6ea59a717ef6190d26a539ebf338e2a642b629ae01ec2a010e9c2e565",
+      "multiaddress": "docker.io/ansgardocker/energy-oracle:1.0.1",
+      "checksum": "0x94c8b8adff0d40d2647468e5db907dea0a481f1585262fef50312dc42842ada5",
       "mreid": {
         "provider": "v8-gramine",
         "version": "1.5"
@@ -19,14 +19,28 @@
     }
   },
   "app": {
-    "owner": "0xa6dd8c096275c020756adb418a905f44566c74d6",
-    "name": "Energy-Telemetry-TEE-Oracle",
+    "owner": "0x8d44D1813a93ad5FEb29dBa7B3Db6F666C9309eA",
+    "name": "Energy-Telemetry-TEE-Oracle-NewVersion",
     "type": "DOCKER",
-    "multiaddr": "docker.io/ansgardocker/energy-oracle:1.0.0",
-    "checksum": "0x05374de6ea59a717ef6190d26a539ebf338e2a642b629ae01ec2a010e9c2e565",
+    "multiaddr": "docker.io/ansgardocker/energy-oracle:1.0.1",
+    "checksum": "0x94c8b8adff0d40d2647468e5db907dea0a481f1585262fef50312dc42842ada5",
     "mreid": {
       "provider": "v8-gramine",
       "version": "1.5"
+    }
+  },
+  "order": {
+    "apporder": {
+      "app": "0x62B576cE78Bbdf80fbd7b249A423cDBE21BB5FF6",
+      "appprice": "0",
+      "volume": "1000000",
+      "tag": [
+        "tee",
+        "tdx"
+      ],
+      "datasetrestrict": "0x0000000000000000000000000000000000000000",
+      "workerpoolrestrict": "0x0000000000000000000000000000000000000000",
+      "requesterrestrict": "0x0000000000000000000000000000000000000000"
     }
   }
 }

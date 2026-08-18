@@ -10,7 +10,7 @@ import datetime
 from eth_abi import encode
 from curl_cffi import requests
 
-# Импортируем нашу систему защиты и авто-ключей
+# Import our security system and auto-keys
 from chaotic_defense import ChaoticDefense, get_pjm_subscription_key, get_gridstatus_commit_hash
 
 IEXEC_OUT = "/iexec_out"
@@ -18,15 +18,15 @@ RESULT_FILE = "/iexec_out/result.json"
 COMPUTED_FILE = "/iexec_out/computed.json"
 APP_ADDRESS = os.getenv("IEXEC_APP_ADDRESS", "0x0000000000000000000000000000000000000000")
 
-# Порог спреда в $/МВт·ч для активации вектора арбитража
+# Spread threshold in $/MWh to activate arbitrage vector
 ARBITRAGE_THRESHOLD = 2.0
 
 def scale_price(value):
-    """Масштабирует float в int256 для Solidity (сохраняя 6 знаков после запятой)."""
+    """Scales float to int256 for Solidity (preserving 6 decimal places)."""
     return int(round(float(value) * 1_000_000))
 
 def get_pjm_lmp(defense_system):
-    """Получает LMP для PJM West Hub (через макро-цену PJM-RTO с использованием обхода GridStatus API без ключей)."""
+    """Fetches LMP for PJM West Hub (via PJM-RTO macro-price using keyless GridStatus API bypass)."""
     defense_system.make_decoy_request()
     defense_system.sleep_chaotic(1.0, 5.0)
 
@@ -72,7 +72,7 @@ def get_pjm_lmp(defense_system):
     return None
 
 def get_miso_lmp(defense_system, hub_node="INDIANA.HUB"):
-    """Получает точную LMP цену для MISO Indiana Hub напрямую с публичного API MISO (с динамическим поиском и хардкодом в качестве резерва)."""
+    """Fetches exact LMP for MISO Indiana Hub directly from MISO public API (with dynamic discovery and hardcoded fallback)."""
     defense_system.make_decoy_request()
     defense_system.sleep_chaotic(1.0, 5.0)
 
@@ -168,7 +168,7 @@ def get_miso_lmp(defense_system, hub_node="INDIANA.HUB"):
     return final_price, final_base, miso_dynamic_success, miso_hardcoded_success
 
 def get_pjm_rto_load(defense_system):
-    """Получает актуальную мгновенную нагрузку (Demand) всей системы PJM RTO с официального API PJM."""
+    """Fetches actual instantaneous load (Demand) of the entire PJM RTO system from the official PJM API."""
     defense_system.make_decoy_request()
     defense_system.sleep_chaotic(1.0, 5.0)
 
@@ -198,7 +198,7 @@ def get_pjm_rto_load(defense_system):
     return None
 
 def get_miso_nsi_data(defense_system):
-    """Получает чистый запланированный переток MISO."""
+    """Fetches MISO Net Scheduled Interchange (NSI)."""
     defense_system.make_decoy_request()
     defense_system.sleep_chaotic(1.0, 5.0)
 
@@ -223,11 +223,11 @@ def get_miso_nsi_data(defense_system):
         print(f"[DEBUG] Error fetching MISO NSI: {e}")
     return None
 def get_rlc_price_usd(defense_system):
-    """Получает текущую рыночную цену RLC/USD с помощью каскадного поиска (Binance -> Gate.io -> CoinGecko)"""
+    """Fetches current RLC/USD market price via cascading lookup (Binance -> Gate.io -> CoinGecko)"""
     defense_system.make_decoy_request()
     defense_system.sleep_chaotic(1.0, 3.0)
     
-    # 1. Binance (без защиты, публичный тикер)
+    # 1. Binance (unprotected public ticker)
     try:
         print("[DEBUG] Fetching RLC price from Binance API...")
         r = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=RLCUSDT", timeout=5)
@@ -323,8 +323,11 @@ def main():
     print(f"\n[RESULT] PJM Price: {pjm_price:.2f} | MISO Price: {miso_price:.2f}")
     print(f"[RESULT] Spread: {price_spread:.2f} | Vector: {arb_vector} | Confidence: {confidence}%")
 
+    suspected_addresses = []
+    suspected_statuses = []
+
     payload = encode(
-        ['address', 'uint256', 'int256', 'int256', 'int256', 'int8', 'uint256', 'uint256'],
+        ['address', 'uint256', 'int256', 'int256', 'int256', 'int8', 'uint256', 'uint256', 'address[]', 'uint8[]'],
         [
             APP_ADDRESS,
             int(time.time()),
@@ -333,7 +336,9 @@ def main():
             scale_price(price_spread),
             arb_vector,
             confidence,
-            rlc_price_scaled
+            rlc_price_scaled,
+            suspected_addresses,
+            suspected_statuses
         ]
     )
 

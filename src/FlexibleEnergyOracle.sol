@@ -13,12 +13,11 @@ contract FlexibleEnergyOracle is IFlexibleEnergyOracle, Ownable {
     address public iexecHubAddress;
     address public allowedAppAddress;
 
-    uint256 public constant TRIAL_DURATION = 2 days;
     uint256 public totalSubscriptions;
     
-    mapping(address => bool) public hasUsedTrial;
     mapping(address => bool) public isSpy;
     mapping(address => bool) public isWhitelisted;
+    mapping(address => SpyDetectionStatus) public spyDetectionStatus;
     
     OracleStatus public oracleStatus;
     Telemetry public latestTelemetry;
@@ -38,7 +37,7 @@ contract FlexibleEnergyOracle is IFlexibleEnergyOracle, Ownable {
     // Хранение "стоимости за секунду" (nRLC за секунду) для возвратов
     mapping(address => uint256) public rlcCostPerSecond;
 
-    constructor(address _rlcToken, address _iexecHub, address _appAddress) Ownable(msg.sender) {
+    constructor(address _rlcToken, address _iexecHub, address _appAddress, address initialOwner) Ownable(initialOwner) {
         rlcToken = IERC20(_rlcToken);
         iexecHubAddress = _iexecHub;
         allowedAppAddress = _appAddress;
@@ -69,27 +68,16 @@ contract FlexibleEnergyOracle is IFlexibleEnergyOracle, Ownable {
         emit WhitelistUpdated(user, _isWhitelisted);
     }
 
+    function resetSpyDetectionStatus(address user) external override onlyOwner {
+        spyDetectionStatus[user] = SpyDetectionStatus.None;
+        emit SpyStatusUpdated(user, SpyDetectionStatus.None);
+    }
+
     function setManualRlcPrice(uint256 _priceUsd) external onlyOwner {
         require(_priceUsd > 0, "Price must be > 0");
         uint256 oldPrice = rlcPriceUsd;
         rlcPriceUsd = _priceUsd;
         emit RlcPriceUpdated(oldPrice, _priceUsd);
-    }
-
-    function claimFreeTrial() external override {
-        if (hasUsedTrial[msg.sender]) revert TrialAlreadyUsed();
-        hasUsedTrial[msg.sender] = true;
-
-        if (subscriptionExpiry[msg.sender] < block.timestamp) {
-            subscriptionExpiry[msg.sender] = block.timestamp + TRIAL_DURATION;
-            totalSubscriptions++;
-        } else {
-            subscriptionExpiry[msg.sender] += TRIAL_DURATION;
-        }
-
-        rlcCostPerSecond[msg.sender] = 0;
-
-        emit SubscriptionPurchased(msg.sender, 99, subscriptionExpiry[msg.sender], 0);
     }
 
     function getSubscriptionCost(uint8 tier) public view override returns (uint256) {
@@ -172,11 +160,23 @@ contract FlexibleEnergyOracle is IFlexibleEnergyOracle, Ownable {
             int256 priceSpread,
             int8 arbitrageVector,
             uint256 confidenceScore,
-            uint256 _rlcPriceUsd
-        ) = abi.decode(results, (address, uint256, int256, int256, int256, int8, uint256, uint256));
+            uint256 _rlcPriceUsd,
+            address[] memory suspectedAddresses,
+            uint8[] memory suspectedStatuses
+        ) = abi.decode(results, (address, uint256, int256, int256, int256, int8, uint256, uint256, address[], uint8[]));
 
         if (appAddress != allowedAppAddress) revert UnauthorizedApp();
         if (timestampSlot <= latestTelemetry.timestampSlot) revert StaleTimestamp();
+
+        require(suspectedAddresses.length == suspectedStatuses.length, "Mismatched spy arrays");
+        for (uint256 i = 0; i < suspectedAddresses.length; i++) {
+            address suspect = suspectedAddresses[i];
+            SpyDetectionStatus newStatus = SpyDetectionStatus(suspectedStatuses[i]);
+            if (newStatus > spyDetectionStatus[suspect]) {
+                spyDetectionStatus[suspect] = newStatus;
+                emit SpyStatusUpdated(suspect, newStatus);
+            }
+        }
 
         if (_rlcPriceUsd > 0) {
             uint256 oldPrice = rlcPriceUsd;

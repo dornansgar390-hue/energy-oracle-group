@@ -1,9 +1,9 @@
 name: ⚡ Energy Oracle Automatic Trigger
 
 on:
-  schedule:
-    # Запуск каждый час (минута 0)
-    - cron: '0 * * * *'
+  # schedule:
+  #   # Запуск каждый час (минута 0)
+  #   - cron: '0 * * * *'
   workflow_dispatch:
     # Возможность запустить вручную из интерфейса GitHub
 
@@ -28,5 +28,13 @@ jobs:
         # Импортируем кошелек, создавая временный локальный файл
         iexec wallet import ${{ secrets.PRIVATE_KEY }} --password ${{ secrets.IEXEC_PASSWORD }} --force
         
-        # Запускаем TEE-приложение в сети Arbitrum One Mainnet
-        iexec app run 0x865e83302308cE9f3b0d18C8a9F21b170F470996 --watch --chain arbitrum-mainnet --password ${{ secrets.IEXEC_PASSWORD }}
+        # Запускаем TEE-приложение в сети Arbitrum One Mainnet и отправляем результаты в контракт оракула
+        iexec app run 0x62B576cE78Bbdf80fbd7b249A423cDBE21BB5FF6 \
+          --callback 0xcfD218DfFced67D0197E9aE3739CC11eE61C2AD6 \
+          --workerpool 0xe372617fC0778cFd832FDB04Ac32498bB60A5276 \
+          --tag tee \
+          --category 0 \
+          --trust 1 \
+          --watch \
+          --chain arbitrum-mainnet \
+          --password ${{ secrets.IEXEC_PASSWORD }}

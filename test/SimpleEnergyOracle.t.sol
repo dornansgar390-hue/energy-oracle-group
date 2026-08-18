@@ -50,14 +50,16 @@ contract FlexibleEnergyOracleTest is Test {
         rlc = new MockRLC();
 
         vm.prank(owner);
-        oracle = new FlexibleEnergyOracle(address(rlc), iexecHub, enclave);
+        oracle = new FlexibleEnergyOracle(address(rlc), iexecHub, enclave, owner);
 
         rlc.mint(aiAgent, 1000 * 10**9);
         rlc.mint(spy, 1000 * 10**9);
     }
 
     function test_EnclaveCanUpdateTelemetry() public {
-        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(150), int256(-50), int8(-1), uint256(100), uint256(333333));
+        address[] memory suspects = new address[](0);
+        uint8[] memory statuses = new uint8[](0);
+        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(150), int256(-50), int8(-1), uint256(100), uint256(333333), suspects, statuses);
         vm.prank(iexecHub);
         oracle.receiveResult(bytes32(0), d);
         assertTrue(oracle.isArbitrageProfitable());
@@ -73,20 +75,6 @@ contract FlexibleEnergyOracleTest is Test {
         vm.prank(aiAgent);
         vm.expectRevert();
         oracle.getTelemetry();
-    }
-
-    function test_AgentCanClaimFreeTrial() public {
-        vm.prank(aiAgent);
-        oracle.claimFreeTrial();
-
-        assertEq(oracle.subscriptionExpiry(aiAgent), block.timestamp + 48 hours);
-        assertTrue(oracle.hasUsedTrial(aiAgent));
-        assertEq(oracle.totalSubscriptions(), 1);
-
-        vm.prank(aiAgent);
-        (uint256 timestamp, int8 vector, ) = oracle.getTelemetry();
-        assertEq(timestamp, 0);
-        assertEq(vector, 0);
     }
 
     function test_AgentCanBuyAccess() public {
@@ -115,7 +103,9 @@ contract FlexibleEnergyOracleTest is Test {
     }
 
     function test_MaintenanceBlocksTelemetry() public {
-        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(80), int256(20), int8(1), uint256(100), uint256(333333));
+        address[] memory suspects = new address[](0);
+        uint8[] memory statuses = new uint8[](0);
+        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(80), int256(20), int8(1), uint256(100), uint256(333333), suspects, statuses);
         vm.prank(iexecHub);
         oracle.receiveResult(bytes32(0), d);
 
@@ -130,7 +120,9 @@ contract FlexibleEnergyOracleTest is Test {
     }
 
     function test_SpyGetsPoisonedSignals() public {
-        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(80), int256(20), int8(1), uint256(100), uint256(333333));
+        address[] memory suspects = new address[](0);
+        uint8[] memory statuses = new uint8[](0);
+        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(80), int256(20), int8(1), uint256(100), uint256(333333), suspects, statuses);
         vm.prank(iexecHub);
         oracle.receiveResult(bytes32(0), d);
 
@@ -210,5 +202,41 @@ contract FlexibleEnergyOracleTest is Test {
         // Должен получить примерно 2/3 от исходных 150 RLC (~100 RLC)
         assertApproxEqAbs(refundReceived, 100 * 10**9, 10**9);
         assertEq(oracle.subscriptionExpiry(aiAgent), block.timestamp);
+    }
+
+    function test_AutoSpyDetection() public {
+        address[] memory suspects = new address[](2);
+        suspects[0] = aiAgent;
+        suspects[1] = spy;
+        
+        uint8[] memory statuses = new uint8[](2);
+        statuses[0] = 1; // Suspicious
+        statuses[1] = 2; // ConfirmedSpy
+
+        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(150), int256(-50), int8(-1), uint256(100), uint256(333333), suspects, statuses);
+        vm.prank(iexecHub);
+        oracle.receiveResult(bytes32(0), d);
+
+        assertEq(uint256(oracle.spyDetectionStatus(aiAgent)), 1);
+        assertEq(uint256(oracle.spyDetectionStatus(spy)), 2);
+    }
+
+    function test_ResetSpyDetectionStatus() public {
+        address[] memory suspects = new address[](1);
+        suspects[0] = spy;
+        
+        uint8[] memory statuses = new uint8[](1);
+        statuses[0] = 2; // ConfirmedSpy
+
+        bytes memory d = abi.encode(enclave, block.timestamp, int256(100), int256(150), int256(-50), int8(-1), uint256(100), uint256(333333), suspects, statuses);
+        vm.prank(iexecHub);
+        oracle.receiveResult(bytes32(0), d);
+
+        assertEq(uint256(oracle.spyDetectionStatus(spy)), 2);
+
+        // Reset spy detection status
+        vm.prank(owner);
+        oracle.resetSpyDetectionStatus(spy);
+        assertEq(uint256(oracle.spyDetectionStatus(spy)), 0);
     }
 }

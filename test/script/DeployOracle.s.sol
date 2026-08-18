@@ -23,11 +23,15 @@ contract DeployOracle is Script {
         // Start broadcasting on-chain transactions
         vm.startBroadcast(deployerPrivateKey);
 
+        // Fetch initial owner (or fall back to deployer's address if not provided)
+        address initialOwnerAddress = vm.envOr("INITIAL_OWNER", vm.addr(deployerPrivateKey));
+
         // Deploy contract
         FlexibleEnergyOracle oracle = new FlexibleEnergyOracle(
             rlcTokenAddress, 
             iexecHubAddress, 
-            trustedEnclaveAddress
+            trustedEnclaveAddress,
+            initialOwnerAddress
         );
 
         console.log("Oracle deployed successfully on Arbitrum One Mainnet at:", address(oracle));
