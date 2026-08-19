@@ -167,7 +167,7 @@
     </div>
 
     <script>
-        const ORACLE_ADDRESS = "0x0000000000000000000000000000000000000000"; 
+        const ORACLE_ADDRESS = "0xcfD218DfFced67D0197E9aE3739CC11eE61C2AD6"; 
         const RLC_ADDRESS = "0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C";
 
         const ORACLE_ABI = [
@@ -216,7 +216,8 @@
         async function updateContractData() {
             try {
                 const bal = await rlcContract.balanceOf(ORACLE_ADDRESS);
-                document.getElementById("rlcBalance").innerText = (bal.toNumber() / 1e9).toFixed(2);
+                // Использование ethers.utils.formatUnits для безопасного и точного форматирования RLC (9 знаков)
+                document.getElementById("rlcBalance").innerText = parseFloat(ethers.utils.formatUnits(bal, 9)).toFixed(2);
 
                 const status = await oracleContract.oracleStatus();
                 ownerAddress = await oracleContract.owner();
@@ -224,9 +225,19 @@
                 const subs = await oracleContract.totalSubscriptions();
                 document.getElementById("subCount").innerText = subs.toString();
 
+                // Показываем панель администратора автоматически, если подключен владелец (Gnosis Safe)
+                // Или даем возможность принудительно открыть её для генерации транзакций
                 if (userAddress.toLowerCase() === ownerAddress.toLowerCase()) {
                     document.getElementById("ownerPanel").classList.remove("hidden");
                     document.getElementById("btnActive").classList.remove("hidden");
+                    document.getElementById("btnMaint").classList.remove("hidden");
+                } else {
+                    // Разрешаем ручной показ панели управления для удобства работы через Gnosis Safe Transaction Builder
+                    document.getElementById("ownerPanel").classList.remove("hidden");
+                    // Показываем кнопки управления статусом тоже
+                    document.getElementById("btnActive").classList.remove("hidden");
+                    document.getElementById("btnMaint").classList.remove("hidden");
+                }
                     document.getElementById("btnMaint").classList.remove("hidden");
                 }
 
