@@ -1,2 +1,0 @@
-0,30 * * * * root /usr/local/bin/run_iexec_oracle.sh >> /var/log/iexec_oracle.log 2>&1
-# Empty line at the end is required for cron
