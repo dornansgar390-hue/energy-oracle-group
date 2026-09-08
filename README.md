@@ -1,6 +1,9 @@
 # ⚡ PJM vs MISO Energy Arbitrage Oracle
 
 **Real-time PJM/MISO spatial arbitrage signal, attested by Intel TDX, on Arbitrum One.**
+[![energy-oracle MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group/badges/card.svg)](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group)
+[![energy-oracle MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group/badges/score.svg)](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group)
+
 
 ## What it is
 A confidential-compute oracle that continuously computes a derived analytical index
@@ -60,7 +63,6 @@ Access terms: [`TERMS.md`](TERMS.md).
 1. Wallet needs RLC + ETH (gas) on Arbitrum One.
 2. Call `build_subscription_tx(wallet, tier)` → get purchase calldata.
 3. Sign & send, then call `get_telemetry(wallet)`.
-
 
 
 ## Architecture
