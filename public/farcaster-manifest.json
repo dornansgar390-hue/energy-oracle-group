@@ -1,0 +1,24 @@
+﻿{
+  "_comment": "PLACEHOLDER. Generate real manifest at https://dev.farcaster.xyz (Hosted Manifest) and replace this file.",
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "vNext",
+    "name": "PJM vs MISO Energy Arbitrage Oracle",
+    "imageUrl": "https://energy-arbitrage.io/frame-preview.png",
+    "iconUrl": "https://energy-arbitrage.io/frame-preview.png",
+    "button": {
+      "title": "Check Signal",
+      "action": {
+        "type": "launch_frame",
+        "name": "Energy Oracle Signal",
+        "url": "https://energy-arbitrage.io/frame.html",
+        "splashImageUrl": "https://energy-arbitrage.io/frame-preview.png",
+        "splashBackgroundColor": "#0b0f14"
+      }
+    }
+  }
+}
