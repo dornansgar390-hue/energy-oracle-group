@@ -28,7 +28,7 @@ RLC_ADDRESS = Web3.to_checksum_address("0xe649e6a1F2afc63ca268C2363691ceCAF75CF4
 CHAIN_ID = 42161
 PUBLIC_ENDPOINT = "https://energy-arbitrage.io/mcp"
 HOMEPAGE = "https://energy-arbitrage.io"
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 # Server uptime tracking
 START_TIME = time.time()
@@ -93,6 +93,21 @@ def _error(message: str) -> str:
 
 # ═══════════ FastMCP server ═══════════
 
+if os.environ.get("GLAMA_INSECURE_ALLOW_ANY_HOST") == "1":
+    transport_security = {"enable_dns_rebinding_protection": False}
+else:
+    transport_security = {
+        "enable_dns_rebinding_protection": True,
+        "allowed_hosts": [
+            "127.0.0.1:*", "localhost:*", "[::1]:*",
+            "energy-arbitrage.io", "energy-arbitrage.io:*",
+        ],
+        "allowed_origins": [
+            "http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*",
+            "http://energy-arbitrage.io:*", "https://energy-arbitrage.io:*",
+        ],
+    }
+
 mcp = FastMCP(
     "PJM-vs-MISO-Energy-Arbitrage-Oracle",
     instructions=(
@@ -109,17 +124,7 @@ mcp = FastMCP(
         mimeType="image/png",
         sizes=["1200x630"],
     )],
-    transport_security={
-        "enable_dns_rebinding_protection": True,
-        "allowed_hosts": [
-            "127.0.0.1:*", "localhost:*", "[::1]:*",
-            "energy-arbitrage.io", "energy-arbitrage.io:*",
-        ],
-        "allowed_origins": [
-            "http://127.0.0.1:*", "http://localhost:*", "http://[::1]:*",
-            "http://energy-arbitrage.io:*", "https://energy-arbitrage.io:*",
-        ],
-    },
+    transport_security=transport_security,
 )
 
 # Set our own version (replaces SDK fallback version)
