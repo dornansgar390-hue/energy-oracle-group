@@ -144,6 +144,14 @@ def send_transaction(w3, account, tx_built, label):
 
 
 def manage_ai_agent_access(w3, account, oracle_contract, rlc_contract, tier):
+    # Check ETH for gas before anything else
+    eth_balance = w3.eth.get_balance(account.address)
+    if eth_balance < w3.to_wei(0.003, 'ether'):  # ~$5 at current prices
+        print(f"   ⚠️  Low ETH balance: {w3.from_wei(eth_balance, 'ether'):.6f} ETH")
+        print("   You need a small amount of ETH on Arbitrum One for gas (~$2-5).")
+        print("   Get ETH from: CEX withdraw → Arbitrum One, or bridge via orbiter.finance")
+        # Don't block — let the user decide to proceed
+
     print("\n[Step 1] Checking subscription status...")
     current_time = int(time.time())
     expiry = oracle_contract.functions.subscriptionExpiry(account.address).call()
@@ -162,6 +170,17 @@ def manage_ai_agent_access(w3, account, oracle_contract, rlc_contract, tier):
         raise RuntimeError(
             f"Insufficient RLC: need {price / 10**9:.2f}, have {agent_balance / 10**9:.2f}"
         )
+
+       # Check ETH balance for gas (critical — missing ETH = cryptic failure)
+    eth_balance = w3.eth.get_balance(account.address)
+    gas_price = w3.eth.gas_price
+    # Approve + purchaseSubscription ≈ 200k gas typical on Arbitrum One
+    estimated_total_wei = gas_price * 200_000
+    if eth_balance < estimated_total_wei * 3:  # 3x buffer
+        print(f"   ⚠️  Low ETH for gas: have {w3.from_wei(eth_balance, 'ether'):.6f} ETH, "
+              f"recommended ≥ {w3.from_wei(estimated_total_wei * 3, 'ether'):.6f} ETH")
+        print("   Get ETH on Arbitrum One from a CEX or bridge.")
+
 
     print(f"[Step 2] Approving RLC transfer ({price / 10**9:.2f} RLC to oracle)...")
     approve_tx = rlc_contract.functions.approve(oracle_contract.address, price).build_transaction(

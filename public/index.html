@@ -2,16 +2,92 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>PJM vs MISO Energy Arbitrage Oracle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Energy Arbitrage Oracle — PJM vs MISO</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #0b0f14; color: #eaeaea; padding: 40px 20px; line-height: 1.6; }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 { font-size: 2rem; margin-bottom: 0.3em; }
+        .badge { display: inline-block; background: #1a4c2a; color: #8fda9f; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+        .subtitle { color: #999; margin-bottom: 2em; }
+        .step { background: #131a22; border: 1px solid #1f2a36; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .step h3 { color: #8fda9f; margin-bottom: 8px; }
+        .step .num { display: inline-block; width: 28px; height: 28px; background: #1a4c2a; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 8px; font-weight: bold; font-size: 0.9rem; }
+        code { background: #1a1f2a; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #c9d1d9; }
+        .links { margin-top: 2em; padding-top: 1.5em; border-top: 1px solid #1f2a36; }
+        .links a { color: #58a6ff; }
+        .cta { display: inline-block; background: #238636; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 12px; }
+        .cta:hover { background: #2ea043; }
+        .faq { margin-top: 2em; }
+        .faq details { margin-bottom: 12px; }
+        .faq summary { cursor: pointer; color: #8b949e; font-weight: 600; }
+        .faq details[open] summary { color: #eaeaea; }
+        .faq .answer { padding: 12px 0 0 20px; color: #bbb; }
+    </style>
 </head>
-<body style="font-family:system-ui;background:#0b0f14;color:#eaeaea;padding:40px;line-height:1.6">
-  <h1>⚡ PJM vs MISO Energy Arbitrage Oracle</h1>
-  <p>Intel TDX attested · Arbitrum One · updated every 60 min</p>
-  <ul>
-    <li>MCP endpoint (agents): <a href="/mcp">/mcp</a></li>
-    <li>x402 manifest (auto-pay): <a href="/.well-known/x402.json">/.well-known/x402.json</a></li>
-    <li>Farcaster frame: <a href="/frame.html">/frame.html</a></li>
-    <li>Contract: <a href="https://arbiscan.io/address/0x55d4E0EF665a747C43f8C67B8fd22A026c6aF326">0x55d4E0EF…</a></li>
-  </ul>
+<body>
+<div class="container">
+    <h1>⚡ PJM vs MISO Energy Arbitrage Oracle</h1>
+    <span class="badge">Intel TDX Attested</span>
+    <span class="badge" style="background:#1a3a5c;color:#79c0ff;">Arbitrum One</span>
+    <span class="badge" style="background:#3a1a1a;color:#f0888e;">Updated every 60 min</span>
+    <p class="subtitle">Real-time spatial arbitrage signal between PJM West Hub and MISO Indiana Hub, computed inside a secure Intel TDX enclave and written on-chain.</p>
+
+    <h2 style="margin-bottom:16px;">📋 Subscribe in 3 steps</h2>
+
+    <div class="step">
+        <h3><span class="num">1</span> Get RLC &amp; ETH</h3>
+        <p>Buy RLC on a centralized exchange (Coinbase, Kraken) and withdraw to Arbitrum One. You also need a small amount of ETH for gas (~$2–5).</p>
+        <p>RLC token on Arbitrum One: <code>0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C</code></p>
+    </div>
+
+    <div class="step">
+        <h3><span class="num">2</span> Connect an AI agent</h3>
+        <p>Add this MCP server to your agent (Claude Desktop, Cursor, any MCP client):</p>
+        <p><code style="font-size:1.1em;">https://energy-arbitrage.io/mcp</code></p>
+        <p>Or use the Python SDK directly:</p>
+        <pre style="background:#1a1f2a;padding:12px;border-radius:8px;overflow-x:auto;font-size:0.85rem;"><code>pip install web3 eth-account
+export AGENT_PRIVATE_KEY=0x...
+export AGENT_TIER=1
+python ai_agent_oracle_client.py</code></pre>
+    </div>
+
+    <div class="step">
+        <h3><span class="num">3</span> Build &amp; sign the purchase</h3>
+        <p>In your agent, call <code>build_subscription_tx(wallet, tier)</code> to get the exact calldata for approve + purchaseSubscription. Sign both transactions on Arbitrum One.</p>
+        <p>Tiers: <strong>$20 / 24h</strong> · <strong>$50 / 72h</strong> · <strong>$100 / 7 days</strong></p>
+        <p>Once confirmed, call <code>get_telemetry(wallet)</code> to read the full arbitrage signal.</p>
+        <a class="cta" href="/mcp" target="_blank">🚀 Try the MCP endpoint</a>
+    </div>
+
+    <div class="links">
+        <p>
+            <a href="https://arbiscan.io/address/0x55d4E0EF665a747C43f8C67B8fd22A026c6aF326" target="_blank">Contract on Arbiscan</a> ·
+            <a href="/.well-known/x402.json" target="_blank">x402 manifest</a> ·
+            <a href="https://github.com/dornansgar390-hue/energy-oracle-group" target="_blank">GitHub</a>
+        </p>
+    </div>
+
+    <div class="faq">
+        <h2 style="margin-bottom:12px;">❓ FAQ</h2>
+        <details>
+            <summary>What if the oracle goes down after I paid?</summary>
+            <div class="answer">The contract includes <code>claimRefund()</code> — if the signal is stale (&gt;90 min) or the oracle is in maintenance mode, you can reclaim your RLC. Funds are never locked forever.</div>
+        </details>
+        <details>
+            <summary>Do I need a separate wallet for my AI agent?</summary>
+            <div class="answer">Yes — your agent needs its own EVM wallet with RLC + ETH on Arbitrum One. The MCP server never holds or requests your private key; all transactions are signed on your side.</div>
+        </details>
+        <details>
+            <summary>Is this legal?</summary>
+            <div class="answer">Yes. The oracle provides a <em>derived analytical index</em> (not raw LMP data), which is a proprietary computational product. Load shifting is explicitly supported under FERC Orders 745 and 2222. See <a href="https://github.com/dornansgar390-hue/energy-oracle-group/blob/main/legal_and_compliance.md">legal_and_compliance.md</a>.</div>
+        </details>
+    </div>
+
+    <p style="margin-top:2em;color:#555;font-size:0.85rem;">
+        Powered by iExec Intel TDX · Arbitrum One · MIT License
+    </p>
+</div>
 </body>
 </html>

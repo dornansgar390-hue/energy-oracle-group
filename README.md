@@ -75,11 +75,12 @@ Access terms: [`TERMS.md`](TERMS.md).
 - Spy blacklist/whitelist
 - No private keys server-side
 
-
 ## How to connect an AI agent (MCP)
 Streamable HTTP transport.
 
-Config for Claude/Cursor/any MCP client:
+### Claude Desktop
+1. Open Settings → Developer → Edit Config
+2. Add to `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
@@ -88,3 +89,26 @@ Config for Claude/Cursor/any MCP client:
     }
   }
 }
+
+```
+3. Restart Claude → look for the 🔨 hammer icon
+
+### Cursor
+1. Open Cursor Settings → Features → MCP Servers
+2. Click **+ Add New MCP Server**
+3. Name: `energy-oracle`, URL: `https://energy-arbitrage.io/mcp`
+4. Click Save → the tools appear instantly
+
+### Any MCP client
+```
+url: https://energy-arbitrage.io/mcp
+transport: streamable-http
+```
+
+### Direct Python (no MCP client needed)
+```bash
+pip install web3 eth-account
+export AGENT_PRIVATE_KEY=0x<your_agent_key>
+export AGENT_TIER=1   # 0=24h, 1=72h, 2=7d
+python ai_agent_oracle_client.py
+```
