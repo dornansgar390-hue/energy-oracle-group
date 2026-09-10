@@ -3,6 +3,8 @@
 **Real-time PJM/MISO spatial arbitrage signal, attested by Intel TDX, on Arbitrum One.**
 [![energy-oracle MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group/badges/card.svg)](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group)
 [![energy-oracle MCP server – quality and maintenance score on Glama](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group/badges/score.svg)](https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group)
+[![smithery badge](https://smithery.ai/badge/dornansgar390/energy-oracle)](https://smithery.ai/servers/dornansgar390/energy-oracle)
+
 
 
 ## What it is
