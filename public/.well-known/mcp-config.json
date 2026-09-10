@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "energy-oracle": {
+      "url": "https://energy-arbitrage.io/mcp",
+      "transport": "streamable-http"
+    }
+  }
+}

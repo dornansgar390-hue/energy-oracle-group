@@ -1,0 +1,55 @@
+# PJM vs MISO Energy Arbitrage Oracle
+
+## What this is
+A real-time spatial arbitrage signal between PJM West Hub and MISO Indiana Hub,
+computed inside an Intel TDX attested enclave and written on Arbitrum One every 60 minutes.
+
+## Why use this
+AI agents that route GPU compute across US data centers can save 10x on electricity
+costs by shifting load to the cheaper grid. This oracle provides the signal to do that.
+
+## How to connect
+MCP endpoint: https://energy-arbitrage.io/mcp
+Transport: streamable-http
+
+## Pricing
+- Tier 0: $20 / 24 hours (Sprinter Pass)
+- Tier 1: $50 / 72 hours (B2B Sweet Spot)
+- Tier 2: $100 / 7 days (Infrastructure Pro)
+Paid in RLC (ERC-20 on Arbitrum One). Dynamic price from contract.
+
+## Contract
+Oracle: 0x55d4E0EF665a747C43f8C67B8fd22A026c6aF326 (Arbitrum One)
+RLC token: 0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C (Arbitrum One)
+
+## Free tools (no subscription)
+- is_arbitrage_profitable() — teaser: is there an opportunity?
+- get_oracle_status() — ACTIVE or MAINTENANCE?
+- get_subscription_cost(tier) — price in RLC
+- check_subscription(address) — expiry timestamp
+- build_subscription_tx(wallet, tier) — calldata for approve + purchase
+- get_oracle_info() — contract, TEE, tiers
+- get_connection_info() — how to connect
+- get_sdk_template() — full Python SDK
+
+## Paid tool (needs subscription)
+- get_telemetry(wallet) — full signal: arbitrageVector + priceSpread
+
+## Subscription steps
+1. Wallet needs RLC + ETH (gas) on Arbitrum One
+2. Call build_subscription_tx(wallet, tier) → get approve + purchase calldata
+3. Sign & send approve(RLC) → wait receipt → sign & send purchaseSubscription
+4. Call get_telemetry(wallet) to read the signal
+
+## Security
+- Intel TDX attestation
+- No private keys server-side — only view calls (eth_call)
+- On-chain gating by msg.sender
+- Spy blacklist/whitelist
+- Refund: claimRefund() if signal stale >90 min or maintenance
+
+## Links
+- Website: https://energy-arbitrage.io
+- MCP endpoint: https://energy-arbitrage.io/mcp
+- GitHub: https://github.com/dornansgar390-hue/energy-oracle-group
+- Contract: https://arbiscan.io/address/0x55d4E0EF665a747C43f8C67B8fd22A026c6aF326
