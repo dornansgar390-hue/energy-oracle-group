@@ -162,7 +162,7 @@ def _readonly_annotations(title: str) -> dict:
     annotations=ToolAnnotations(**_readonly_annotations("Oracle General Info")),
 )
 def get_oracle_info() -> str:
-    """PJM vs MISO Energy Arbitrage Oracle — general info: contract, network, TEE, pricing tiers. Starting point for any agent."""
+    """Retrieve comprehensive metadata for the PJM vs MISO Energy Arbitrage Oracle: smart contract address, Arbitrum One network, Intel TDX attestation status, and available subscription pricing tiers. Use as the primary initialization step for any agent workflow."""
     return _pretty({
         "name": "PJM vs MISO Energy Arbitrage Oracle",
         "description": "Spatial arbitrage vector + price spread between PJM West Hub and MISO Indiana Hub US wholesale electricity markets.",
@@ -192,7 +192,7 @@ def get_oracle_info() -> str:
     annotations=ToolAnnotations(**_readonly_annotations("Oracle Status")),
 )
 def get_oracle_status() -> str:
-    """Check if the oracle is ACTIVE or in MAINTENANCE, and the number of active subscribers."""
+    """Check the real-time operational status of the oracle contract. Returns whether the system is ACTIVE or in MAINTENANCE, along with total active subscribers. Use this tool to verify system availability before requesting premium telemetry."""
     w3 = _get_w3()
     oracle, _ = _get_contracts(w3)
     status_code = oracle.functions.oracleStatus().call()
@@ -275,7 +275,7 @@ def get_subscription_cost(
     annotations=ToolAnnotations(**_readonly_annotations("Is Arbitrage Profitable")),
 )
 def is_arbitrage_profitable() -> str:
-    """Free: is PJM vs MISO arbitrage profitable right now? No subscription needed."""
+    """Evaluate the instantaneous financial viability of spatial electricity arbitrage between PJM West Hub and MISO Indiana Hub wholesale markets. Returns a boolean profitability indicator. Use as a zero-friction pre-flight check before deciding to purchase a full telemetry subscription."""
     w3 = _get_w3()
     oracle, _ = _get_contracts(w3)
     profitable = oracle.functions.isArbitrageProfitable().call()
@@ -295,7 +295,7 @@ def is_arbitrage_profitable() -> str:
 def get_telemetry(
     subscriber_address: Annotated[str, Field(description="EVM address that has an active RLC subscription, e.g. 0x1234...")],
 ) -> str:
-    """Full signal: arbitrageVector + priceSpread. Requires an active subscription. Executed as a view call: msg.sender = subscriber_address."""
+    """Retrieve the premium analytical energy signal computed inside the Intel TDX enclave. Returns the complete spatial arbitrage vector (direction: -1, 0, +1) and current price spread index between PJM and MISO. Executed as a static on-chain view call. Requires an active, unexpired paid RLC subscription for the provided address."""
     w3 = _get_w3()
     oracle, _ = _get_contracts(w3)
     try:
@@ -340,7 +340,7 @@ def build_subscription_tx(
     tier: Annotated[int, Field(description="Subscription tier: 0 = 1 day ($20), 1 = 3 days ($50), 2 = 7 days ($100)")],
     sponsor_address: Annotated[Optional[str], Field(description="Optional EVM address of a sponsor who pays for the agent's subscription")] = None,
 ) -> str:
-    """Build calldata to purchase a subscription: approve(RLC) + purchaseSubscription. The agent (or sponsor) signs and sends it themselves."""
+    """Generate the cryptographic transaction calldata required to purchase a subscription on Arbitrum One. Output covers a two-step payload: ERC-20 RLC token approve followed by contract purchaseSubscription. This tool strictly builds calldata and does not submit transactions; the calling agent must sign and broadcast the payload externally."""
     if tier not in TIERS:
         return _error(f"Invalid tier. Available: {list(TIERS.keys())}")
     w3 = _get_w3()
@@ -384,7 +384,7 @@ def build_subscription_tx(
     annotations=ToolAnnotations(**_readonly_annotations("Connection Info")),
 )
 def get_connection_info() -> str:
-    """How to connect this oracle in Claude Desktop / Cursor / any MCP client, and the list of all available tools."""
+    """Retrieve integration and transport configuration guides for connecting this oracle to AI clients (Claude Desktop, Cursor, MCP clients), including the complete list of accessible tools and capabilities."""
     return _pretty({
         "protocol": "MCP (Model Context Protocol)",
         "server_name": "PJM-vs-MISO-Energy-Arbitrage-Oracle",
@@ -392,8 +392,8 @@ def get_connection_info() -> str:
         "public_endpoint": PUBLIC_ENDPOINT,
         "homepage": HOMEPAGE,
         "catalogs": {
-            "smithery": "https://smithery.ai/server/energy-arbitrage",
-            "glama": "https://glama.ai/servers/energy-arbitrage",
+            "smithery": "https://smithery.ai/server/@dornansgar390-hue/energy-oracle-group",
+            "glama": "https://glama.ai/mcp/servers/dornansgar390-hue/energy-oracle-group",
             "pulsemcp": "https://pulsemcp.com/servers/energy-arbitrage",
         },
         "tools": [
