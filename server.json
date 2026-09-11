@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dornansgar390-hue/energy-oracle",
+  "title": "PJM vs MISO Energy Arbitrage Oracle",
+  "description": "Real-time spatial electricity arbitrage signal between PJM West Hub and MISO Indiana Hub. Computed inside an Intel TDX attested enclave, written on-chain every 60 min on Arbitrum One. 9 MCP tools for autonomous AI agents: profitability check, dynamic RLC pricing, on-chain subscription gating, transaction calldata building, gated telemetry. M2M monetization via RLC (ERC-20) subscriptions. US-centric counterpart to EU energy oracle systems.",
+  "version": "1.3.1",
+  "author": "dornansgar390-hue",
+  "repository": {
+    "url": "https://github.com/dornansgar390-hue/energy-oracle-group",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://energy-arbitrage.io/mcp"
+    }
+  ],
+  "keywords": [
+    "energy",
+    "electricity",
+    "arbitrage",
+    "oracle",
+    "iexec",
+    "arbitrum",
+    "defi",
+    "tee",
+    "mcp",
+    "gpu",
+    "datacenter",
+    "load-shifting",
+    "depin",
+    "pjm",
+    "miso"
+  ]
+}
