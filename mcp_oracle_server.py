@@ -39,6 +39,25 @@ TIERS = {
     2: {"name": "Infrastructure Pro", "duration": "7 days", "usd": 100},
 }
 
+# ═══════════ Maintenance Mode ═══════════
+# Set True to pause oracle on glama.ai and smithery.ai
+MAINTENANCE_MODE = True
+MAINTENANCE_MESSAGE = "The Energy Oracle is temporarily under reconstruction for V2 upgrade. Please check back soon. For updates: https://energy-arbitrage.io"
+
+def _maintenance_response():
+    return json.dumps({
+        "maintenance": True,
+        "message": MAINTENANCE_MESSAGE,
+        "version": VERSION,
+        "status": "reconstruction"
+    }, ensure_ascii=False, default=str)
+
+def _check_maintenance():
+    """Returns maintenance response if in maintenance mode, else None."""
+    if MAINTENANCE_MODE:
+        return _maintenance_response()
+    return None
+
 ORACLE_ABI = [
     {"inputs": [], "name": "getTelemetry", "outputs": [
         {"internalType": "uint256", "name": "timestampSlot", "type": "uint256"},
@@ -109,29 +128,8 @@ else:
     }
 
 mcp = FastMCP(
-    "PJM-vs-MISO-Energy-Arbitrage-Oracle",
-    instructions=(
-        "ELECTRICITY IS 30-60% OF GPU COMPUTE COST \u2014 THIS ORACLE FINDS ",
-        "10X CHEAPER GRIDS SO YOU CAN ROUTE THERE.\n\n",
-        "Real-time arbitrage signal between PJM West Hub and MISO Indiana Hub ",
-        "(US wholesale electricity). Peak-hour spreads can reach 10x. ",
-        "Computed in an Intel TDX attested enclave, written on-chain every ",
-        "60 minutes \u2014 fully verifiable before you spend anything.\n\n",
-        "VERIFY BEFORE YOU BUY (free, no subscription):\n",
-        "  is_arbitrage_profitable() \u2014 active opportunity right now?\n",
-        "  get_oracle_status() \u2014 ACTIVE?\n",
-        "  get_subscription_cost(tier) \u2014 exact RLC price\n",
-        "  check_subscription(address) \u2014 expiry check\n",
-        "  build_subscription_tx(wallet, tier) \u2014 purchase calldata\n\n",
-        "PAID (RLC subscription required):\n",
-        "  get_telemetry(wallet) \u2014 full vector + spread\n\n",
-        "WHY RLC? Subscriptions are paid in iExec RLC (ERC-20, Arbitrum One). ",
-        "No RLC yet? Read oracle://business_case for the operator ROI case, ",
-        "then apply the budget-request template in oracle://guide. One ",
-        "load-shift event can save more than months of subscriptions.\n",
-        f"  Oracle: {ORACLE_ADDRESS} | RLC: {RLC_ADDRESS} | Arbitrum One (42161)\n",
-        "Pricing: $20/24h, $50/72h, $100/7d. Refund if stale >90 min.",
-    ),
+    "[UNDER RECONSTRUCTION] Energy Oracle",
+    instructions="[UNDER RECONSTRUCTION] The Energy Oracle is temporarily paused for V2 upgrade. Please check back soon.",
     website_url=HOMEPAGE,
     icons=[Icon(
         src=f"{HOMEPAGE}/frame-preview.png",
@@ -387,7 +385,7 @@ def get_connection_info() -> str:
     """Retrieve integration and transport configuration guides for connecting this oracle to AI clients (Claude Desktop, Cursor, MCP clients), including the complete list of accessible tools and capabilities."""
     return _pretty({
         "protocol": "MCP (Model Context Protocol)",
-        "server_name": "PJM-vs-MISO-Energy-Arbitrage-Oracle",
+        "server_name": "[UNDER RECONSTRUCTION] Energy Oracle",
         "version": VERSION,
         "public_endpoint": PUBLIC_ENDPOINT,
         "homepage": HOMEPAGE,
@@ -685,4 +683,47 @@ def prompt_purchase_guide() -> list[dict]:
 if __name__ == "__main__":
     print(f"⚡ {mcp.name} v{VERSION} starting at http://127.0.0.1:8000/mcp")
     print(f"   Contract: {ORACLE_ADDRESS} | Arbitrum One | Intel TDX")
-    mcp.run(transport="streamable-http")
+    
+
+# ═══════════ Maintenance Middleware ═══════════
+# Intercepts all tool calls when in maintenance mode
+import functools
+
+if MAINTENANCE_MODE:
+    print(f"[MAINTENANCE] Oracle is in maintenance mode - {MAINTENANCE_MESSAGE}")
+    
+    # Override all registered tools to return maintenance message
+    for tool_name in list(mcp._tool_manager._tools.keys()):
+        original_fn = mcp._tool_manager._tools[tool_name].fn
+        
+        @functools.wraps(original_fn)
+        async def maint_wrapper(*args, tool_name=tool_name, **kwargs):
+            return json.dumps({
+                "maintenance": True,
+                "tool": tool_name,
+                "message": MAINTENANCE_MESSAGE,
+                "version": VERSION,
+                "status": "reconstruction"
+            }, ensure_ascii=False, default=str)
+        
+        mcp._tool_manager._tools[tool_name].fn = maint_wrapper
+    print(f"[MAINTENANCE] All {len(mcp._tool_manager._tools)} tools paused")
+
+# MAINTENANCE MODE - override all tools
+if True:  # MAINTENANCE_MODE enabled
+    print("[MAINTENANCE] Oracle under reconstruction - tools disabled")
+    # Replace all tool functions
+    for t_name in list(mcp._tool_manager._tools.keys()):
+        def _make_maint(t_name):
+            def _maint_fn(*args, **kwargs):
+                return json.dumps({
+                    "status": "reconstruction",
+                    "title": "[UNDER RECONSTRUCTION] Energy Oracle",
+                    "message": "The Energy Oracle is temporarily paused for V2 upgrade. Please check back soon.",
+                    "version": VERSION,
+                    "homepage": HOMEPAGE
+                }, ensure_ascii=False, default=str)
+            return _maint_fn
+        mcp._tool_manager._tools[t_name].fn = _make_maint(t_name)
+
+mcp.run(transport="streamable-http")
