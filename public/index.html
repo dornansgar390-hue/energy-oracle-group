@@ -28,37 +28,23 @@
 </head>
 <body>
 <div class="container">
-    <h1>⚡ PJM vs MISO Energy Arbitrage Oracle</h1>
-    <span class="badge">Intel TDX Attested</span>
-    <span class="badge" style="background:#1a3a5c;color:#79c0ff;">Arbitrum One</span>
-    <span class="badge" style="background:#3a1a1a;color:#f0888e;">Updated every 60 min</span>
-    <p class="subtitle">Real-time spatial arbitrage signal between PJM West Hub and MISO Indiana Hub, computed inside a secure Intel TDX enclave and written on-chain.</p>
+    <h1>⚡ [UNDER RECONSTRUCTION] Energy Oracle</h1>
+    <span class="badge" style="background:#5a1a1a;color:#f0888e;">Under Reconstruction</span>
+    <p class="subtitle">The Energy Oracle is temporarily paused for V2 upgrade with expanded market coverage.</p>
 
-    <h2 style="margin-bottom:16px;">📋 Subscribe in 3 steps</h2>
-
-    <div class="step">
-        <h3><span class="num">1</span> Get RLC &amp; ETH</h3>
-        <p>Buy RLC on a centralized exchange (Coinbase, Kraken) and withdraw to Arbitrum One. You also need a small amount of ETH for gas (~$2–5).</p>
-        <p>RLC token on Arbitrum One: <code>0xe649e6a1F2afc63ca268C2363691ceCAF75CF47C</code></p>
+    <div class="step" style="border-color:#5a1a1a;">
+        <h3 style="color:#f0888e;">Under Reconstruction</h3>
+        <p>The Energy Oracle is currently being upgraded to <strong>V2</strong> with 5 US ISO markets and 10 arbitrage pairs.</p>
+        <p>For updates, visit our <a href="https://github.com/dornansgar390-hue/energy-oracle-group" target="_blank">GitHub repository</a>.</p>
     </div>
 
     <div class="step">
-        <h3><span class="num">2</span> Connect an AI agent</h3>
-        <p>Add this MCP server to your agent (Claude Desktop, Cursor, any MCP client):</p>
-        <p><code style="font-size:1.1em;">https://energy-arbitrage.io/mcp</code></p>
-        <p>Or use the Python SDK directly:</p>
-        <pre style="background:#1a1f2a;padding:12px;border-radius:8px;overflow-x:auto;font-size:0.85rem;"><code>pip install web3 eth-account
-export AGENT_PRIVATE_KEY=0x...
-export AGENT_TIER=1
-python ai_agent_oracle_client.py</code></pre>
-    </div>
-
-    <div class="step">
-        <h3><span class="num">3</span> Build &amp; sign the purchase</h3>
-        <p>In your agent, call <code>build_subscription_tx(wallet, tier)</code> to get the exact calldata for approve + purchaseSubscription. Sign both transactions on Arbitrum One.</p>
-        <p>Tiers: <strong>$20 / 24h</strong> · <strong>$50 / 72h</strong> · <strong>$100 / 7 days</strong></p>
-        <p>Once confirmed, call <code>get_telemetry(wallet)</code> to read the full arbitrage signal.</p>
-        <a class="cta" href="/mcp" target="_blank">🚀 Try the MCP endpoint</a>
+        <h3>V2 Improvements</h3>
+        <p>• 5 markets: PJM, MISO, ERCOT, CAISO, NYISO</p>
+        <p>• 10 arbitrage pairs (full matrix)</p>
+        <p>• Pay with any token via Uniswap V3</p>
+        <p>• Pay-per-signal escrow system</p>
+        <p>• Enhanced spy detection &amp; MEV protection</p>
     </div>
 
     <div class="links">
