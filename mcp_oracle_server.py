@@ -726,4 +726,6 @@ if True:  # MAINTENANCE_MODE enabled
             return _maint_fn
         mcp._tool_manager._tools[t_name].fn = _make_maint(t_name)
 
+print("[SERVER] Energy Oracle permanently removed from this endpoint")
+sys.exit(0)
 mcp.run(transport="streamable-http")
