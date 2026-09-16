@@ -9,12 +9,7 @@
     "url": "https://github.com/dornansgar390-hue/energy-oracle-group",
     "source": "github"
   },
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://energy-arbitrage.io/mcp"
-    }
-  ],
+  "remotes": [],
   "keywords": [
     "energy",
     "electricity",
