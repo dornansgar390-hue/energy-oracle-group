@@ -3,78 +3,72 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>[UNDER RECONSTRUCTION] Energy Oracle</title>
+    <title>Energy Oracle — Under Reconstruction</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #0b0f14; color: #eaeaea; padding: 40px 20px; line-height: 1.6; }
-        .container { max-width: 720px; margin: 0 auto; }
-        h1 { font-size: 2rem; margin-bottom: 0.3em; }
-        .badge { display: inline-block; background: #1a4c2a; color: #8fda9f; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
-        .subtitle { color: #999; margin-bottom: 2em; }
-        .step { background: #131a22; border: 1px solid #1f2a36; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-        .step h3 { color: #8fda9f; margin-bottom: 8px; }
-        .step .num { display: inline-block; width: 28px; height: 28px; background: #1a4c2a; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 8px; font-weight: bold; font-size: 0.9rem; }
-        code { background: #1a1f2a; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #c9d1d9; }
-        .links { margin-top: 2em; padding-top: 1.5em; border-top: 1px solid #1f2a36; }
-        .links a { color: #58a6ff; }
-        .cta { display: inline-block; background: #238636; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 12px; }
-        .cta:hover { background: #2ea043; }
-        .faq { margin-top: 2em; }
-        .faq details { margin-bottom: 12px; }
-        .faq summary { cursor: pointer; color: #8b949e; font-weight: 600; }
-        .faq details[open] summary { color: #eaeaea; }
-        .faq .answer { padding: 12px 0 0 20px; color: #bbb; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #0b0f14;
+            color: #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .card {
+            text-align: center;
+            max-width: 520px;
+        }
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 0.3em;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.2em;
+            letter-spacing: -0.5px;
+        }
+        .badge {
+            display: inline-block;
+            background: #5a1a1a;
+            color: #f0888e;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5em;
+        }
+        p {
+            color: #999;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5em;
+        }
+        .divider {
+            width: 48px;
+            height: 2px;
+            background: #1f2a36;
+            margin: 0 auto 1.5em;
+            border-radius: 2px;
+        }
+        .footer {
+            color: #555;
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>⚡ [UNDER RECONSTRUCTION] Energy Oracle</h1>
-    <span class="badge" style="background:#5a1a1a;color:#f0888e;">Under Reconstruction</span>
-    <p class="subtitle">The Energy Oracle is temporarily paused for V2 upgrade with expanded market coverage.</p>
-
-    <div class="step" style="border-color:#5a1a1a;">
-        <h3 style="color:#f0888e;">Under Reconstruction</h3>
-        <p>The Energy Oracle is currently being upgraded to <strong>V2</strong> with 5 US ISO markets and 10 arbitrage pairs.</p>
-        <p>For updates, visit our <a href="https://github.com/dornansgar390-hue/energy-oracle-group" target="_blank">GitHub repository</a>.</p>
+    <div class="card">
+        <div class="icon">🚧</div>
+        <h1>Under reconstruction</h1>
+        <div class="badge">Coming Soon — V2</div>
+        <div class="divider"></div>
+        <p>Energy Oracle is currently being rebuilt with expanded market coverage and new features. Check back soon.</p>
+        <p class="footer">⚡ Powered by iExec Intel TDX · Arbitrum One</p>
     </div>
-
-    <div class="step">
-        <h3>V2 Improvements</h3>
-        <p>• 5 markets: PJM, MISO, ERCOT, CAISO, NYISO</p>
-        <p>• 10 arbitrage pairs (full matrix)</p>
-        <p>• Pay with any token via Uniswap V3</p>
-        <p>• Pay-per-signal escrow system</p>
-        <p>• Enhanced spy detection &amp; MEV protection</p>
-    </div>
-
-    <div class="links">
-        <p>
-            <a href="https://arbiscan.io/address/0x55d4E0EF665a747C43f8C67B8fd22A026c6aF326" target="_blank">Contract on Arbiscan</a> ·
-            <a href="/.well-known/x402.json" target="_blank">x402 manifest</a> ·
-            <a href="https://github.com/dornansgar390-hue/energy-oracle-group" target="_blank">GitHub</a> ·
-            <a href="https://smithery.ai/servers/dornansgar390/energy-oracle" target="_blank">Smithery</a>
-        </p>
-    </div>
-
-    <div class="faq">
-        <h2 style="margin-bottom:12px;">❓ FAQ</h2>
-        <details>
-            <summary>What if the oracle goes down after I paid?</summary>
-            <div class="answer">The contract includes <code>claimRefund()</code> — if the signal is stale (&gt;90 min) or the oracle is in maintenance mode, you can reclaim your RLC. Funds are never locked forever.</div>
-        </details>
-        <details>
-            <summary>Do I need a separate wallet for my AI agent?</summary>
-            <div class="answer">Yes — your agent needs its own EVM wallet with RLC + ETH on Arbitrum One. The MCP server never holds or requests your private key; all transactions are signed on your side.</div>
-        </details>
-        <details>
-            <summary>Is this legal?</summary>
-            <div class="answer">Yes. The oracle provides a <em>derived analytical index</em> (not raw LMP data), which is a proprietary computational product. Load shifting is explicitly supported under FERC Orders 745 and 2222. See <a href="https://github.com/dornansgar390-hue/energy-oracle-group/blob/main/legal_and_compliance.md">legal_and_compliance.md</a>.</div>
-        </details>
-    </div>
-
-    <p style="margin-top:2em;color:#555;font-size:0.85rem;">
-        Powered by iExec Intel TDX · Arbitrum One · MIT License
-    </p>
-</div>
 </body>
 </html>
